@@ -17,7 +17,7 @@ const normalizePort = val => {
     return false;
 };
 
-/* Définition d'une constante pour le port indiquer à express sur quel port l'application devra tourner */
+/* Définition d'une constante pour le port indique à express sur quel port l'application devra tourner */
 const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
   
