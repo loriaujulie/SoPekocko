@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/User.js'); 
 
+const maskemail = require('maskemail')
 /* enregistrement de nouveaux utilisateurs */
 exports.signup = (req, res, next) => {
     /* hash du mot de passe avant l'enregistrement - fonction asynchrone - 10 correspond au nombre de tours où on execute le hashage */
@@ -12,7 +13,8 @@ exports.signup = (req, res, next) => {
       .then(hash => {
         const user = new User({
             /* adresse email correspond à celle présente dans la requête */
-          email: req.body.email,
+          email: maskemail(req.body.email),
+          //req.body.email
           /* enregistrement du mot de passe crypté ci-dessus */
           password: hash
         });
@@ -23,9 +25,10 @@ exports.signup = (req, res, next) => {
       .catch(error => res.status(500).json({ error }));
 };
 
+
 /* connexion des utilisateurs */
 exports.login = (req, res, next) => {
-    User.findOne({ email: req.body.email })
+    User.findOne({ email: maskemail(req.body.email) })
       .then(user => {
         if (!user) {
           return res.status(401).json({ error: "l'utilisateur n'a pas été trouvé !" });

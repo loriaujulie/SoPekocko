@@ -1,6 +1,9 @@
 /*Importation du framework express */
 const express = require("express");
 
+/*Importation de dotenv pour les variables d'environnement*/
+require("dotenv").config();
+
 /* installation du package body-parser */
 const bodyParser = require('body-parser');
 
@@ -28,14 +31,6 @@ const limiter = rateLimit({
   message:"Trop de connexions, merci de retenter plus tard !"
   });
 
-/* ajout de headers permettant aux api d'échanger entre elles - permet de passer au-delà de la sécurité des CORS (cross origin resouce sharing) */
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  next();
-});
-
 /* importation de la route */
 const sauceRoutes = require('./routes/sauces.js');
 const userRoutes = require('./routes/users.js');
@@ -43,12 +38,23 @@ const userRoutes = require('./routes/users.js');
 /* fonction json du body-parser définie comme middleware global  */
 app.use(bodyParser.json());
 
+/* gestion des requêtes POST plus étendues (formulaires par ex)*/
+app.use(bodyParser.urlencoded({extended: true}));
+
 /* Liaison avec MongoDB */
-mongoose.connect('mongodb+srv://user2:2020-utilisateurP6@cluster0.dlwlg.mongodb.net/piquante?retryWrites=true&w=majority',
+mongoose.connect(process.env.LIEN_MONGO,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
+
+/* ajout de headers permettant aux api d'échanger entre elles - permet de passer au-delà de la sécurité des CORS (cross origin resouce sharing) */
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  next();
+});
 
 /* Gestionnaire indique à Express qu'il faut gérer le dossier images de manière statique */
 app.use('/images', express.static(path.join(__dirname, 'images')));
