@@ -7,7 +7,6 @@ Sur le backend :
 nodemon server
 
 Sur le frontend (dwj-projet6) :
-npm start
 ng serve
 
 Le projet se lance sur le localhost:4200
